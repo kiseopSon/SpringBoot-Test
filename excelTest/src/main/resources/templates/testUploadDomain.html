@@ -1,0 +1,67 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>testUploadDomain</title>
+</head>
+<body>
+테스트 업로드 도메인
+
+	<form id="recsRoomWriteForm" method="post" enctype="multipart/form-data">
+	<label for="inp_file">업로드</label>
+	<input type="file" id="inp_file" name="fileNm" title="첨부파일 선택">
+	</form>
+	<button type="submit" id="send">전송</button>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+g_cttPage = (function() {
+	$(document).ready(function() {
+	    fn_setEvents();
+	});
+	
+	function fn_setEvents(){
+		$("#send").on("click", function(){
+			submitAll();
+		});
+	}
+	
+	function submitAll(){
+		var cnfMsg="등록 하시겠습니까? ";
+		var confm = confirm(cnfMsg);
+		
+			if(confm){
+				var inp_file = document.getElementById('inp_file');
+			    var formData = new FormData();
+			    formData.append('file', inp_file.files[0])
+			    $.ajax({
+			        type: "POST",
+			        enctype: 'multipart/form-data',
+			        url: '/excel/upload/code_domain_fmt',
+			        data: formData,
+			        processData: false,
+			        contentType: false,
+			        cache: false,
+			        timeout: 60000,
+			        success: function (data) {
+			        	console.log(data);
+			        		if(data.result == 'S'){
+			        			alert("저장되었습니다.");
+				        	}else{
+				        		alert("실패하였습니다.");
+				        	}
+			        	
+			        },
+			        error : function(data) {
+			        		if(data.statusText){
+				        		alert("timeout error");
+			        		}else{
+				        		alert("관리자에게 문의 부탁드립니다.")
+			        		}
+			           }
+			    });
+		}else{
+			return;
+		}
+	}
+})();
+</script>
+		

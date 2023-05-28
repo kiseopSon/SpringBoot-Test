@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Excel">
+
+	<!-- 로그인 로그 등록 -->
+	<select id="downExcel" parameterType="String" resultType="String">
+		SELECT col_description(c.oid, attnum) AS comment
+		FROM pg_class c
+		JOIN pg_attribute a ON c.oid = a.attrelid
+		JOIN pg_namespace n ON c.relnamespace = n.oid
+		WHERE n.nspname = 'public'
+		AND c.relname = #{tableNm}
+		and col_description(c.oid, attnum) is not NULL
+	</select>
+	
+</mapper>
