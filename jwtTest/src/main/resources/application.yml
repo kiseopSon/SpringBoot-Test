@@ -1,0 +1,28 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/jwt
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1111
+  h2:
+    console:
+      enabled: true
+
+
+  jpa:
+    #database: mysql   # 안되면 추가, Dialect라는 하이버네이트가 db와ㅣ 통신하기 사용하는 언어를 못찾을 경우 사용
+    #database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분
+    hibernate:
+      ddl-auto: update #create update none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
