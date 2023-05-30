@@ -58,9 +58,15 @@ log4j관련
   단, 해당 에러가 뜰때 log4j2.xml파일에서 <properties>태그에  <property>속성중에 logPath를 설정해주는 부분에 경로를 수정하는 사항이 있을 수 있다. ※중요※ 이클립스 콘솔창에 데이터가 해당파일의 정보를 통해 정보가 저장된다.
 
 웹서버관련
- Error : Can't set headers after they are sent to the client.
+ - Error : Can't set headers after they are sent to the client.
  설명 : 노드로 개발한 웹 서버환경에서 res.end()사용할때 노드도 자바스크립트이기 때문에 return을 시켜주지 않으면 끝나지 않기에 발생하는 에러.
  방법 : res 앞에 return을 붙여주면 된다.
+ - javax.mail.MessagingException: Could not convert socket to TLS.
+ 설명 : 이메일 로직중에 smtp통신을 위하여 기존 SSL로 설정하였으나, STS4에선 되나, egov프레임워크3.8버전의 Maven프로젝트에선 해당 소켓방식을 찾을 수 없다고 나온다.
+ 방법 : "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" 대신
+        "mail.smtp.ssl.trust", "smtp.naver.com"
+        "mail.smtp.ssl.protocols", "TLSv1.2" 
+        2개를 추가하여 변경한다.
 
 DB연결관련
   - The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received type number (1111)
