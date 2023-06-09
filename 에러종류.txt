@@ -5,6 +5,11 @@
  - SpringBoot데이터베이스 drvier maven프로젝트의 pom.xml에 추가후, properties파일 또는 yaml파일에 내용이 없는겨우 -> Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured. = 내용추가, 예시) spring.datasource.url=jdbc:[Database]://localhost:3306/[Database스키마]
  - SpringBoot데이터베이스 drvier 설정을 잘못 작성했을 경우 -> Error creating bean with name 'dataSource' defined in class path resource = 정확하게 수정
  - svn오류 170011 잘못된 url경로수정.
+ - vsCode Settings.json에 다음 내용을 가장 바깥쪽에 적어두면 다음부턴 파일을 열때 인코딩방식이 euckr로 고정된다.
+    "[java]": {
+        "files.encoding": "euckr",
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
 대용량관련
  - 테이블에 Mybatis로 insert시, bulk방식의 (앞 생략) VALUES (~),(~) ...은 ddr4.16ram일때, 양이 5천건 미만의 사용자가 동시에 5명까지는 견딤. 그이상은 사용가많아 지거나 양이 2만건이상부턴 알수없음. DB에 락이걸리는게 대표적 증상, 서버가 터져서 트랜잭션 ROLLBACK되서 DB커넥션이 끊기거나, 중간에 INSERT되다 맘.
  - GC overhead limit exceeded = 가비지 컬렉트의 힙 사이즈 오버플로우 오류 = pom.xml에 서버(Tomcat)구문에 configuration태그 안에 systemProperties태그 안에 JAVA_OPTS태그 속에 Xmx = 최대 힙사이즈 증가시키면 된다. 그리고 톰캣의 bin파일의 service.bat파일을 열어서 jvm 크기도 늘려주고 설정하는 방법은 같다. 예시) 1024m = 10만건당
