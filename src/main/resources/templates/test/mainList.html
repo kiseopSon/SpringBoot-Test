@@ -1,0 +1,38 @@
+<html xmlns=th="http://www.thymeleaf.org">
+	<meta charset="utf-8">
+	<body>
+		여기는 mainList.html
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<div class="container">
+			<div>
+				<table>
+					<td th:text="${vo}"></td>
+					<thead>
+						<th>#</th>
+						<th>이름</th>
+					</thead>
+					<tbody>
+						
+						<tr th:each="testVO : ${vo}">
+							<td th:text="${testVO.id}"></td>
+							<td th:text="${testVO.name}"></td>
+						</tr>
+					</tbody>
+				</table>
+					
+			</div>
+		</div>
+	</body>
+</html>
