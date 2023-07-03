@@ -1,0 +1,145 @@
+개발 환경 셋팅 관련
+ - org.apache.jasper.JasperException: = 서버를 클린 하면 오류해결.
+ - 액세스가 거부되었습니다. = 이클립스를 관리자모드로 실행하면 오류해결.
+ - invalid LOC header (bad signature) = 프로젝트 우클릭 -> Maven -> update Project
+ - svn오류 170011 잘못된 url경로수정.
+ - vsCode Settings.json에 다음 내용을 가장 바깥쪽에 적어두면 다음부턴 파일을 열때 인코딩방식이 euckr로 고정된다.
+    "[java]": {
+        "files.encoding": "euckr",
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+대용량관련
+ - 테이블에 Mybatis로 insert시, bulk방식의 (앞 생략) VALUES (~),(~) ...은 ddr4.16ram일때, 양이 5천건 미만의 사용자가 동시에 5명까지는 견딤. 그이상은 사용가많아 지거나 양이 2만건이상부턴 알수없음. DB에 락이걸리는게 대표적 증상, 서버가 터져서 트랜잭션 ROLLBACK되서 DB커넥션이 끊기거나, 중간에 INSERT되다 맘.
+ - GC overhead limit exceeded = 가비지 컬렉트의 힙 사이즈 오버플로우 오류 = pom.xml에 서버(Tomcat)구문에 configuration태그 안에 systemProperties태그 안에 JAVA_OPTS태그 속에 Xmx = 최대 힙사이즈 증가시키면 된다. 그리고 톰캣의 bin파일의 service.bat파일을 열어서 jvm 크기도 늘려주고 설정하는 방법은 같다. 예시) 1024m = 10만건당
+Mybatis관련
+ - nested exception is org.apache.ibatis.exceptions.PersistenceException: = mybatis 구문 오류 resultType오류일 경우가 큼.
+ - select를 하는데 resultType속성이 Strin이건 Map이던 출력이 안되는상황 = 정부전자의추상클래스Mapper를 쓰고있는 dao문이라면 selectList로 서버에선 List<resultType에 맞게> 넣으면 된다 resultType을 HashMap으로 한다면 동일한 키의 벨류값으로 맵리스트모양으로 들어간다. selectOne으로 해도 검색과 주소조차 죽어도 안나온다, 참고로List로받아오려는데 resultType을 List로한다면 selectOne마냥 안된다. 결론 : ArrayList타입쓰는방법을 모르겠고,그냥 vo써라.
+ - select를 하는데 resultMap속성이 vo로 설정했다면 = mybatis의 resultMap태그를 같이사용중일텐데, 그럴경우 type엔vo경로, id엔 앞에정한 vo와 같은이름일테고, 서버측에서 selectOne을 해도 조회는되나 받아올수없다. selectList로해야 이쁘게 담기고, List의 제네릭또한 설정한 vo로명시해 줘야한다.
+ - 위와 같은 경우는 MariaDB환경인데, Oracle에선 List<Map>을 잘 가져온다. 주의 해야할 점은, mybatis를 사용할 경우 쿼리문 마지막에 ;(세미콜론)을 붙이면 안된다. Oracle은 가져갈 때 ;(세미콜론)까지 가져가서 errorCode-00911가 난다.
+com.mysql.jdbc.exceptions.jdbc4.MySQLTransactionRollbackException: Deadlock found when trying to get lock; try restarting transaction = insert ★작동중에★ 다른 테이블을 참조하여 select을 진행할 경우 트랜잭션이 꼬여서 문제발생. 
+해결방법 : my.cnf 파일에 아래의 옵션을 추가 후 MySQL, Java 프로그램 재기동 4가지 종류중 맞는거 선택.
+- READ-UNCOMMITTED
+- READ-COMMITTED
+- REPEATABLE-READ
+- SERIALIZABLE
+org.apache.ibatis.builder.IncompleteElementException = mybatis 구문 오류 resultType의 속성오류일 가능성이 큼.
+ - select를 할때 선언한 return형식이 List<객체>인데 List<Map> 형식이나, List<List<Map>> 의 형식으로 잘 못들어올 경우가 있음, 특히 egov프레임워크 DAO는 일반적인 Spring구조와 다르게 더 가볍게 구현체를 다루고 있어, return 형식을 주의깊게 봐야함.
+
+file관련
+- IOException , FileNotFoundException , NullPointerException, NumberFormatException
+- java.lang.reflect.UndeclaredThrowableException : db사용자관리자와 연관이 있음, 파일 io할때 권한이없고, db에적재를못해서 생기는 오류이 가능성이 큼, 뒤에 sqlexception까지 같이 뜨는게 특징. - 해결방법 : 사용자 추가.
+- java.lang.module.findexception : 부트 레이어의 초기 설정동안에 에러가 발생한건데, 모듈이 없거나 잘못되어서 읽는데 실패 했다는 이야기 이다. - 해결방법 : 프로젝트가 초기상태이면 다시 만들때  java Settings -> create module-info.java file부분을 체크하거나, 이미존재하는 모듈명을 지정 및 설명해주는 파일의 내용을 확인하여 매핑이 올바르지 않는것을 수정한다.
+
+session관련
+- SessionException = websocket과 관련있음.
+
+list관련
+- JsonMappingException = jackson라이브러리 에러, 매핑하려는 클래스에 기본 생성자가 없으면 실패하는 에러 - 해결방법 : 기본 생성자 추가.
+- JsonParseException = 존재하지않는 필드명을 대상으로 지목해서 생긴에러. - 해결방법 : 객체변환시 객체의 필드에 선언되지 않는 내용은 무시해주는 설정을 해야함.
+    2중 1택.
+    1. 클래스명 위에 @JsonIgnoreProperties(ignoreUnknown = true) 추가
+    2. objectMapper에 feature설정 2가지
+    ObjectMapper mapper = new ObjectMapper(); 
+    // 방법 1 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
+    // 방법 2 mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+- IndexOutOfBoundsException = 규격외 사이즈오버시 발생 - 해결방법 : 위에서 아래로 검색하거나, 동적으로 데이터 처리를 통한 방지.
+
+jsp관련
+- javax.el.PropertyNotFoundException = jsp에서 ${}로 값을 가져올때 없는 키값을 불러올때 나타나는 오류 : 해결방법 = 눈으로 확인해서 고치는방법밖엔 없음.
+
+pom.xml관련
+- The processing instruction target matching "[xX mM lL]" is not allowed : 해결방법 = 맨위 설명란쪽에 공백있는지 확인
+- Description	Resource	Path	Location	Type The processing instruction target matching "[xX][mM][lL]" is not allowed.	pom.xml	/misoCrm	line 1	XML Problem : 해결방법 = pom.xml에 띄어쓰기가 되있는지 확인.
+
+
+- java.lang.ClassNotFoundException -> 'egovHandler 관련 : svn에서 프로젝트를 받을 때 제대로 import되지않는 경우 생기는 톰캣 에러.
+ 방법 1 프로젝트 오른쪽버튼 properties 클릭 -> java Build Path 에서 라이브러리 x 처리된거없는지 확인 -> 있다면 변경후 프로젝트 클린, 없다면 프로젝트 클린.
+ 방법 2 이클립스 경로중에 \workspace\.metadata\.plugins\org.eclipse.core.resources에서 .snap파일 지우고, 프로젝트 클린, 기존에 톰캣도 설정되있었다면, 그거 까지 삭제후 재실행.
+ 방법 3 pom.xml에 등록된 디벤던시 다운로드가 됬는지 확인. ※ 가끔 처음 프로젝트 생성하고, 환경설정할때 제때 다운로드 받아지지않는 경우가 흔함.
+
+log4j관련
+ The web application [ROOT] registered the JDBC driver [net.sf.log4jdbc.sql.jdbcapi.DriverSpy] but failed to unregister it when the web application was stopped. To prevent a memory leak, the JDBC Driver has been forcibly unregistered.
+  설명 : log4j가 db드라이버 접속하는데 생기는 오류 (서버가동하는덴 문제없음.) : 톰캣6버전 이하는 설정을 따로 해줘야한다지만, 그 이상부터는 문제없고, web-info -> lib에 있는 mysql-connector-java-(...버전) 파일을 가동중인 톰캣파일의 맨위 상위카테고리의 lib폴더에 옮기면 경고가 나오지 표시되지 않는다.
+  단, 해당 에러가 뜰때 log4j2.xml파일에서 <properties>태그에  <property>속성중에 logPath를 설정해주는 부분에 경로를 수정하는 사항이 있을 수 있다. ※중요※ 이클립스 콘솔창에 데이터가 해당파일의 정보를 통해 정보가 저장된다.
+
+웹서버관련
+ - Error : Can't set headers after they are sent to the client.
+ 설명 : 노드로 개발한 웹 서버환경에서 res.end()사용할때 노드도 자바스크립트이기 때문에 return을 시켜주지 않으면 끝나지 않기에 발생하는 에러.
+ 방법 : res 앞에 return을 붙여주면 된다.
+ - Mail server connection failed; nested exception is javax.mail.MessagingException: Could not convert socket to TLS.
+ 설명 : 이메일 로직중에 smtp통신을 위하여 기존 SSL로 설정하였으나, STS4에선 되나, egov프레임워크3.8버전의 Maven프로젝트에선 해당 소켓방식을 찾을 수 없다고 나온다.
+ 방법 : "mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory" 대신
+        "mail.smtp.ssl.trust", "smtp.naver.com"
+        "mail.smtp.ssl.protocols", "TLSv1.2" 
+        2개를 추가하여 변경한다.
+
+DB연결관련
+  - The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received type number (1111)
+  설명 : databaseResource나 db드라이버 설정하는 구간의 비밀번호 입력오류.
+  방법 : 비밀번호가 null이면 ""가 필요없지만 숫자도 ""로 감싸줘야한다.
+  - original: Error: connect ECONNREFUSED 127.0.0.1:3306
+  설명 : mysql을 사용한 경우인데, 서비스에 먼저 작동시켜 주지않으면, 다음과가 같은 에러가 발생.
+  방법 : 서비스에 등록된 mysql을 키거나 재시작하면 된다.
+  - allowPublicKeyRetrieval is not allowed
+  설명 : mySQL8.0버전부터 보안적인 이슈로 useSSL 옵션에 대한 추가적인 설정이 필요하다.
+  방법 : useSSL설정을 하여 true로 승인하거나 connection 옵션중에 allowPublicKeyRetrieval=true으로 변경하면 된다. => 공개키 사용여부= 'true'
+
+  SELECT `User`.`id`, `User`.`email`, `User`.`nick`, `User`.`password`, `User`.`provider`, `User`.`snsId`, `User`.`createdAt`, `User`.`updatedAt`, `User`.`deletedAt`, `Followers`.`id` AS `Followers.id`, `Followers`.`nick` AS `Followers.nick`, `Followers->Follow`.`createdAt` AS `Followers.Follow.createdAt`, `Followers->Follow`.`updatedAt` AS `Followers.Follow.updatedAt`, `Followers->Follow`.`followingId` AS `Followers.Follow.followingId`, `Followers->Follow`.`followerId` AS `Followers.Follow.followerId`, `Followings`.`id` AS `Followings.id`, `Followings`.`nick` AS `Followings.nick`, `Followings->Follow`.`createdAt` AS `Followings.Follow.createdAt`, `Followings->Follow`.`updatedAt` AS `Followings.Follow.updatedAt`, `Followings->Follow`.`followingId` AS `Followings.Follow.followingId`, `Followings->Follow`.`followerId` AS `Followings.Follow.followerId` 
+  FROM `users` AS `User` 
+  LEFT OUTER JOIN ( 
+    `Follow` AS `Followers->Follow`
+     INNER JOIN `users` AS `Followers`
+      ON `Followers`.`id` = `Followers->Follow`.`followerId`)
+       ON `User`.`id` = `Followers->Follow`.`followingId`
+        AND (`Followers`.`deletedAt` IS NULL)
+         LEFT OUTER JOIN ( `Follow` AS `Followings->Follow`
+          INNER JOIN `users` AS `Followings` 
+          ON `Followings`.`id` = `Followings->Follow`.`followingId`)
+           ON `User`.`id` = `Followings->Follow`.`followerId` 
+           AND (`Followings`.`deletedAt` IS NULL) 
+           WHERE (`User`.`deletedAt` 
+           IS NULL AND `User`.`id` = 114);
+
+DB데이터 삽입관련
+  설명 : 간혹 csv로 된 파일로 데이터베이스에 밀어넣게 되면 줄바꿈 현상이 들어가있어서, 한줄이 더들어가 있다 = 이것을'캐리지 리턴' 이라한다. 해당줄만 제거해 주면 정상적으로 데이터를 조회할 수 있다.
+  방법 1 : csv이면 공백체크를 전부 확인.
+  방법 2 : 이미 데이터베이스에 적재가 된 상태라면, update '테이블명' set '컬럼명' = replace('컬럼명', char(13), ''); 의 명령어를 실행하면 된다.
+  설명 : 간혹 데이터가 숫자 0인줄 알고 있는데, 타입이 다른 형태라면 mysql 5.6이상 버전의 경우 sql모드가 STRICT_TRANS_TABLES이 설정되어 있어 타입이 잘못되었다는 오류를 뱉는다.
+  방법 1 : SELECT @@global.sql_mode; 명령어로 먼저 상태를 확인하고, 있다면 mysql가 설치된 경로 에서 리눅스는 : /etc/my.cnf파일과 /usr/local/mysql/my.cnf에 있는 것도 같이 sql-mode라고 한 부분을 고치면된다.
+  방법 2 : SELECT @@global.sql_mode; 명령어로 먼저 상태를 확인하고, 있다면 mysql가 설치된 경로 에서 윈도우는 : C:\Program Files\MariaDB 10.5\data 해당경로에서 my.ini에 sql-mode라고 있다면 엄격모드(=STRICT_TRANS_TABLES)를 제거하면 되거나, 없다면 빼고 새로 넣어준다.
+
+Maven관련
+ - http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+ 설명 : 최종적으로 war파일을 만들기위해 maven프로젝트의 install을 누를경우 뜨는 오류 중 하나, 이유는 모름
+ 방법 : project clean누르면 왠만해선 해결, 안되면 검색.
+
+Spring관련
+  - .springframeworkConflictBeanDefinition예외
+  설명 : controller나 service와 serviceImpl에서 동일한 이름을 가진곳과 같은 주소값을 가져서 1:1 매칭의 빈 종속이 정확하지 않다고 오류가 나온다.
+  방법 : 각각의 1:1 이름을 지어서 제대로 매핑해주면 해결.
+CSS관련
+  설명 : 테이블 태그로 tr td를 사용해서 디자인을 구성하였는데, 일정이상 tr이 생성되면 화면에 텍스트가 깨지는 현상이 일어나서 보기 안좋다.
+  방법 : 테이블 태그 위에 div태그를 하나 놓고 div태그엔 width 100% overFlow : auto;로 테이블 태그엔 border-collapse : collapse; white-space : nowrap; 
+  단, table-layout 속성은 반드시 auto이거나 없어야 한다. 아니면 텍스트가 서로 겹쳐버린다.
+  설명 : pc버전 24인치 기준과 노트북의 해상도와 기본 폰트 퍼센트는 기준이 다르다. 그래서 노트북인경우 새롭게 퍼센트가 수정되도록 계산식을 추가한다.
+  방법 : top.jsp에 아래와 같은 소스를 추가하였습니다.
+          if(window.devicePixelRatio == 1.25) {
+              document.body.style.zoom = 80 + "%";
+              $(".lb_wrap").addClass("notebook");
+          }
+
+SpringBoot관련
+   - SpringBoot데이터베이스 driver를 maven프로젝트의 pom.xml에 추가후, properties파일 또는 yaml파일에 내용이 없는겨우 -> Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured. = 내용추가, 예시) spring.datasource.url=jdbc:[Database]://localhost:3306/[Database스키마]
+   - SpringBoot데이터베이스 driver를 설정을 잘못 작성했을 경우 -> Error creating bean with name 'dataSource' defined in class path resource = 정확하게 수정
+   - 참고로 Maven프로젝트든, Gradle이든, 자바버전이17이든 8이든 war든 jar든 상관없이
+    -  MyBatis,
+    -  boot-starter-data-jdbc
+    -  boot-starter-data-jpa
+    -  Spring-Batch
+  implements했을경우, properties파일에 dataSource를 명시하지 않을경우에도 Failed to configure a DataSource: 'url'가 발생.
+   - 하나의 app을통해 서버를 여러개 작동시키고 싶다면, properties 또는 yaml파일에 server.port = 9202식으로 추가해주면 포트 변경이 된다.
+
+MariaDB관련
+    - json데이터를 쿼리테이블처럼 출력해 줄수있다. 데이터타입은 longText타입으로길게해서, 10.7버전이상에서만 사용이 가능하다.
+   설명 : SELECT JSON_EXTRACT(name, "$.name") AS name, JSON_EXTRACT(hobby, "$.age") AS hobby, skill FROM my_table, JSON_TABLE(hobby, "$.skills[*]" COLUMNS (skill VARCHAR(50) PATH '$')) AS skills_table;
+   방법 : JSON_EXTRACT형태를 읽어내고, name은 컬럼명, $.name은 키값, value값안에 리스트가 있다면 $.skills[*]는 배열안에 모든걸 동적 컬럼을 만들어서 선언해주고 path를 $로 붙여서 $.skill로 만들어준다. 그것을 컬럼으로 만들어서 skill로 select하면 된다.
