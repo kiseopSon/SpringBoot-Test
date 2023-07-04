@@ -34,7 +34,7 @@ public class JpaTestVORepo implements testRepo{
 	public Optional<testVO> findByName(String name) {
 		//jpql = sql언어
 		System.out.println("여기는 jpa_findByName : " + name);
-		List<testVO> result = em.createQuery("select m from testVO m where m.name = :name", testVO.class)
+		List<testVO> result = em.createQuery("select m from testVO m where m.username = :name", testVO.class)
 		.setParameter("name", name)
 		.getResultList();
 		return result.stream().findAny();

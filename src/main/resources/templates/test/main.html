@@ -1,5 +1,10 @@
 <html xmlns=th="http://www.thymeleaf.org">
 	<meta charset="utf-8">
+	<!--파이어 베이스-->
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
 	<body>
 		여기는 main.html
 		
@@ -29,4 +34,12 @@
 			</div>
 		</div>
 	</body>
+	<script>
+		var firebaseConfig = {
+        apiKey: "AIzaSyDxeBMcsLOESHig6CrpweDlU7lTjHC",
+        authDomain: "applemarket-83cc9.firebaseapp.com",
+        projectId: "applemarket-83cc9",
+      };
+      firebase.initializeApp(firebaseConfig);
+	</script>
 </html>
