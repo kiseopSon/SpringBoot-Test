@@ -25,6 +25,11 @@ public class loginController {
         System.out.println("00");
         return "/login/loginMain";
     }
+    @PostMapping("/login")
+    public String loginPass(){
+        System.out.println("01");
+        return "redirect:/login";
+    }
     @GetMapping("/insert")
     public String insert(){
         System.out.println("30");
@@ -34,7 +39,7 @@ public class loginController {
     public String insertLogin(AddUserRequest dto){
         System.out.println("31");
         userService.save(dto);
-        return "/login/loginMain";
+        return "redirect:/login";
     }
 
     @GetMapping("loginSuccess")
