@@ -10,3 +10,5 @@ sts4로 개발되었고,
 그럴경우 따로 파일을 뽑아서 다시 import하는 방식으로 추가하면 적상 작동한다.
 
 마지막으로 application.yml의 db경로는 항상 달라질 수 있으며, database는 현재 jwt라는 명칭으로 설정해 놓았고, ddl-auto명령어로 database까지 생성해 주지 않기에 존재하고 있어야 Dialect관련 에러가 나오지 않고 정상 실행된다. 
+#2024-04-28 새롭게 추가된 이슈
+1. Unknown system variable 'transaction_isolation' 에러가 뜰것이다. mySQL의 버전차이로 인해서 발생한는 오류인데, db의 설정중에 .ini의파일 내용안에 빠져있다는 이야기이다. -> mySQL으로 사용하지 말고, MariaDB의 의존성주입을 하고, db커넥션을 연결해주면 해결된다.
