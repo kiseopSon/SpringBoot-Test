@@ -16,7 +16,7 @@ public class deepPathDetected {
 
     public void path() throws IOException, InterruptedException {
         // 감시할 기본 디렉토리 경로 설정
-        Path baseDir = Paths.get("/home/ubuntu/web/opt/n_pipe/files");
+        Path baseDir = Paths.get("/root/web/opt/n_pipe/files");
         //Path baseDir = Paths.get("E://opt//files");
 
         // WatchService 생성
