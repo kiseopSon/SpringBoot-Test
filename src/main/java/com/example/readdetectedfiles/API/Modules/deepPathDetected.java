@@ -29,7 +29,7 @@ public class deepPathDetected {
 
         // 감시 루프
         while (true) {
-            WatchKey key;
+            WatchKey key = null;
             try {
                 key = watcher.take(); // 이벤트가 발생할 때까지 대기
             } catch (InterruptedException ex) {
@@ -49,7 +49,7 @@ public class deepPathDetected {
                 // 절대 경로 생성
                 Path fullPath = parentDir.resolve(relativePath);
 
-                if (kind == ENTRY_CREATE) {
+                if (kind == ENTRY_CREATE || kind == ENTRY_MODIFY) {
                     System.out.println("새로 생성된 항목: " + fullPath);
                     // 새 디렉토리가 생성된 경우 해당 디렉토리도 감시하도록 등록
                     if (Files.isDirectory(fullPath)) {
@@ -79,11 +79,5 @@ public class deepPathDetected {
         WatchKey key = dir.register(watcher, ENTRY_CREATE);
         keyPathMap.put(key, dir);
         System.out.println("감시 디렉토리 등록됨: " + dir);
-    }
-
-    public static boolean isZipFile(String filePath) {
-        Path path = Paths.get(filePath);
-        String fileName = path.getFileName().toString();
-        return fileName.toLowerCase().endsWith(".zip");
     }
 }
