@@ -1,7 +1,6 @@
 package com.example.readdetectedfiles;
 
 import com.example.readdetectedfiles.API.Modules.deepPathDetected;
-import com.example.readdetectedfiles.API.Modules.pathDetected;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
