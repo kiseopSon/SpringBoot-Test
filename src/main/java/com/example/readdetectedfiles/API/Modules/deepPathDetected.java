@@ -49,7 +49,7 @@ public class deepPathDetected {
                 // 절대 경로 생성
                 Path fullPath = parentDir.resolve(relativePath);
 
-                if (kind == ENTRY_CREATE || kind == ENTRY_MODIFY) {
+                if (kind == ENTRY_CREATE) {
                     System.out.println("새로 생성된 항목: " + fullPath);
                     // 새 디렉토리가 생성된 경우 해당 디렉토리도 감시하도록 등록
                     if (Files.isDirectory(fullPath)) {
