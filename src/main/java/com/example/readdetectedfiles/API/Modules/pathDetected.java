@@ -12,7 +12,7 @@ public class pathDetected {
 
     public void path() throws IOException, InterruptedException {
         // 감시할 디렉토리 경로 설정
-        Path dir = Paths.get("/home/ubuntu/web/opt/n_pipe/files");
+        Path dir = Paths.get("/home/airflow/programs");
 //        Path dir = Paths.get("D://opt//n_sight//files");
 
         // WatchService 생성
