@@ -1,6 +1,6 @@
 package com.example.readdetectedfiles;
 
-import com.example.readdetectedfiles.API.Modules.deepPathDetected;
+import com.example.readdetectedfiles.API.Modules.deepdeepPathDetected;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,7 +11,7 @@ public class ReadDetectedFilesApplication {
         SpringApplication.run(ReadDetectedFilesApplication.class, args);
 
         try {
-            deepPathDetected path = new deepPathDetected();
+            deepdeepPathDetected path = new deepdeepPathDetected();
             path.path();
         } catch (Exception e){
             System.out.println(e.getMessage());

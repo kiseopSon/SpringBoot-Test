@@ -16,7 +16,7 @@ public class deepPathDetected {
 
     public void path() throws IOException, InterruptedException {
         // 감시할 기본 디렉토리 경로 설정
-        Path baseDir = Paths.get("/home/airflow/programs");
+        Path baseDir = Paths.get("/nas/programs");
         //Path baseDir = Paths.get("E://opt//files");
 
         // WatchService 생성
@@ -25,7 +25,7 @@ public class deepPathDetected {
         // 기본 디렉토리 등록
         registerDirectory(baseDir, watcher);
 
-        System.out.println("파일경로 감시 시작: " + baseDir);
+        System.out.println("파일감시 경로: " + baseDir + " 밑으로 종속 검색 시작");
 
         // 감시 루프
         while (true) {
