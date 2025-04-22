@@ -3,8 +3,12 @@ package com.example.readdetectedfiles.API.Modules;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -59,6 +63,9 @@ public class deepPathDetected {
                         Thread.sleep(1000);
                         unzip.unzip(fullPath.toFile());
                     }
+
+                    Path extractedDir = fullPath.getParent();
+                    setPermissionsRecursively(extractedDir);
                 }
             }
 
@@ -71,6 +78,60 @@ public class deepPathDetected {
                     break;
                 }
             }
+        }
+    }
+
+    // 새로운 메서드 추가: 디렉토리와 파일에 재귀적으로 권한 설정
+    private void setPermissionsRecursively(Path dir) throws IOException {
+        if (!Files.exists(dir)) return;
+
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                setFullPermissions(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                setFullPermissions(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    // 파일 또는 디렉토리에 모든 권한 설정
+    private void setFullPermissions(Path path) {
+        try {
+            Set<PosixFilePermission> permissions = new HashSet<>();
+
+            // 소유자 권한
+            permissions.add(PosixFilePermission.OWNER_READ);
+            permissions.add(PosixFilePermission.OWNER_WRITE);
+            permissions.add(PosixFilePermission.OWNER_EXECUTE);
+
+            // 그룹 권한
+            permissions.add(PosixFilePermission.GROUP_READ);
+            permissions.add(PosixFilePermission.GROUP_WRITE);
+            permissions.add(PosixFilePermission.GROUP_EXECUTE);
+
+            // 기타 사용자 권한
+            permissions.add(PosixFilePermission.OTHERS_READ);
+            permissions.add(PosixFilePermission.OTHERS_WRITE);
+            permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+
+            // 권한 적용 (rwxrwxrwx와 동일)
+            Files.setPosixFilePermissions(path, permissions);
+
+            System.out.println("권한 설정 완료: " + path);
+        } catch (UnsupportedOperationException e) {
+            System.out.println("이 시스템은 POSIX 권한을 지원하지 않습니다: " + path);
+            File file = path.toFile();
+            file.setReadable(true, false);
+            file.setWritable(true, false);
+            file.setExecutable(true, false);
+        } catch (IOException e) {
+            System.err.println("권한 설정 중 오류 발생: " + path + " - " + e.getMessage());
         }
     }
 
